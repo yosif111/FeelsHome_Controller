@@ -23,7 +23,7 @@ class AudioController extends Controller
         ]);
         
     }
-    private function getFirstTrack(){
+    private function getNextTrackId(){
         $res = $this->client->request('POST', $this->uri, [
         'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.tracklist.get_next_tlid']
         ]);
@@ -32,7 +32,7 @@ class AudioController extends Controller
     }
     //core.playback.next
     public function playPlayList(){
-        $tlid = $this->getFirstTrack();
+        $tlid = $this->getNextTrackId();
         
         $res = $this->client->request('POST', $this->uri, [
         'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.play',
@@ -181,7 +181,7 @@ class AudioController extends Controller
                     $track['album_uri'] = $content['track']['album']['uri'];
                     $track['artist'] =$content['track']['album']['artists'][0]['name'];
                 }
-                
+
                 $track['tlid'] = $content['tlid'];
 
                 $tracks[] = $track;
@@ -237,16 +237,40 @@ class AudioController extends Controller
         return $playlists;
     }
 
+    public function getCurrentId(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.get_current_tlid']
+        ]);
 
-public function getAllStatus(){
+        if($res->getStatusCode() == 200)
+        return new Response(json_decode($res->getBody()->getContents(), true)['result'],200);
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
+    public function getAllStatus(){
         $allStates = [];
         
         $allStates['state'] = $this->getCurrentState();
+
         
         $content = $this->getCurrentTrack();
         $allStates['track'] = $content['track'];
         $allStates['artist'] = $content['artist'];
         $allStates['album'] = $content['album'];
+
+        if ($allStates['track'] == null) {
+            $id = $this->getNextTrackId();
+            $queue = $this->getQueue();
+            foreach ($queue as $track) {
+                if ($track['tlid'] == $id) {
+                    $allStates['track'] = $track['track_name'];
+                    $allStates['artist'] = $track['artist'];
+                    $allStates['album'] = $track['album_name'];
+                    break;
+                }
+            }
+        }
 
         $allStates['volume'] = $this->getVolume();
 

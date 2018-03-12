@@ -33,6 +33,7 @@ Route::get('/audio/getAllStatus','AudioController@getAllStatus');
 Route::get('/audio/getVolume','AudioController@getVolume');
 Route::get('/audio/playNext','AudioController@playNext');
 Route::get('/audio/getQueue','AudioController@getQueue');
+Route::get('/audio/getCurrentId','AudioController@getCurrentId');
 Route::get('/audio/getCurrentTrack','AudioController@getCurrentTrack');
 Route::get('/audio/getCurrentState','AudioController@getCurrentState');
 Route::get('/audio/playPrevious','AudioController@playPrevious');
