@@ -79,6 +79,63 @@ class AudioController extends Controller
         
         return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
     }
+    public function playPrevious(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.previous']
+        ]);
+        
+        if($res->getStatusCode() == 200)
+        return new Response(['Msg' => 'success'],200);
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
+    public function getCurrentState(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.get_state']
+        ]);
+        
+        if($res->getStatusCode() == 200) {
+            $content = json_decode($res->getBody()->getContents(), true);
+            return $content['result'];
+        }
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
+    public function getVolume(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.get_volume']
+        ]);
+        
+        if($res->getStatusCode() == 200) {
+            $content = json_decode($res->getBody()->getContents(), true);
+            return $content['result'];
+        }
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
+    public function getCurrentTrack(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.get_current_track']
+        ]);
+        
+        if($res->getStatusCode() == 200) {
+            $tarck = [];
+            $content = json_decode($res->getBody()->getContents(), true);
+            $content = $content['result'];
+
+            $track['track'] = $content['name'];
+            $track['album'] = $content['album']['name'];
+            $track['artist'] = $content['artists'][0]['name'];
+
+            return $track;
+        }
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
     public function InsertPlaylistToQueue($playlist_uri){
         $this->clearQueue();
         $res = $this->client->request('POST', $this->uri, [
@@ -87,13 +144,56 @@ class AudioController extends Controller
         ]);
         
         if($res->getStatusCode() == 200)
+        return new Response(['Msg' => $res->getBody()->getContents()],200);
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
+    public function changeVolume($volume){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.set_volume',
+        'params' => ['volume' => $volume * 1 ]] 
+        ]);
+        
+        if($res->getStatusCode() == 200)
         return new Response(['Msg' => 'success'],200);
         
         return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
     }
     
-    public function getPlaylists(){
+    public function getQueue(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.tracklist.get_tl_tracks']
+        ]);
         
+        $contents = json_decode($res->getBody()->getContents(), true);
+        $contents = $contents['result'];
+
+        $tracks = [];
+        foreach ($contents as $content) {
+                $track = [];
+                $track['track_name'] = $content['track']['name'];
+                $track['track_length'] = $content['track']['length'];
+                $track['track_uri'] = $content['track']['uri'];
+            
+                if(isset($content['track']['album'])){
+                    $track['album_name'] = $content['track']['album']['name'];
+                    $track['album_uri'] = $content['track']['album']['uri'];
+                    $track['artist'] =$content['track']['album']['artists'][0]['name'];
+                }
+                
+                $track['tlid'] = $content['tlid'];
+
+                $tracks[] = $track;
+        }
+
+        
+        
+        
+        return $tracks;
+    }
+
+    public function getPlaylists(){
         $res = $this->client->request('POST', $this->uri, [
         'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playlists.get_playlists']
         ]);
@@ -135,5 +235,21 @@ class AudioController extends Controller
         }
         
         return $playlists;
+    }
+
+
+public function getAllStatus(){
+        $allStates = [];
+        
+        $allStates['state'] = $this->getCurrentState();
+        
+        $content = $this->getCurrentTrack();
+        $allStates['track'] = $content['track'];
+        $allStates['artist'] = $content['artist'];
+        $allStates['album'] = $content['album'];
+
+        $allStates['volume'] = $this->getVolume();
+
+        return $allStates;
     }
 }

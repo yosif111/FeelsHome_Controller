@@ -25,8 +25,15 @@ Route::get('/lights','LightsController@getLightsInfo');
 
 Route::get('/audio/playlists','AudioController@getPlaylists');
 Route::get('/audio/InsertPlaylistToQueue/{playlist_uri}','AudioController@InsertPlaylistToQueue');
+Route::get('/audio/changeVolume/{volume}','AudioController@changeVolume');
 Route::get('/audio/playPlayList','AudioController@playPlayList');
 Route::get('/audio/pause','AudioController@pause');
 Route::get('/audio/play','AudioController@play');
+Route::get('/audio/getAllStatus','AudioController@getAllStatus');
+Route::get('/audio/getVolume','AudioController@getVolume');
 Route::get('/audio/playNext','AudioController@playNext');
+Route::get('/audio/getQueue','AudioController@getQueue');
+Route::get('/audio/getCurrentTrack','AudioController@getCurrentTrack');
+Route::get('/audio/getCurrentState','AudioController@getCurrentState');
+Route::get('/audio/playPrevious','AudioController@playPrevious');
 Route::get('/test','UserController@test');
