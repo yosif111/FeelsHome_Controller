@@ -31,20 +31,19 @@ class AudioController extends Controller
         return  $contents = json_decode($res->getBody()->getContents(), true)['result'];
     }
     //core.playback.next
-    public function playPlayList(){
-        $tlid = $this->getNextTrackId();
+    // public function playPlayList(){
+    //     $tlid = $this->getNextTrackId();
         
-        $res = $this->client->request('POST', $this->uri, [
-        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.play',
-        'params' => ['tlid' => $tlid ]]
-        ]);
+    //     $res = $this->client->request('POST', $this->uri, [
+    //     'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.play',
+    //     'params' => ['tlid' => $tlid ]]
+    //     ]);
         
-        if($res->getStatusCode() == 200)
-        return new Response(['Msg' => 'success'],200);
+    //     if($res->getStatusCode() == 200)
+    //     return new Response(['Msg' => 'success'],200);
         
-        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
-        
-    }
+    //     return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    // }
 
     public function pause(){
         $res = $this->client->request('POST', $this->uri, [
@@ -57,9 +56,11 @@ class AudioController extends Controller
         return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
     }
 
-    public function play(){
+    public function play($id){
+       
         $res = $this->client->request('POST', $this->uri, [
-        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.play']
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.play',
+        'params' => ['tlid' => $id]]
         ]);
         
         if($res->getStatusCode() == 200)
@@ -69,16 +70,16 @@ class AudioController extends Controller
     }
 
     //core.playback.next
-    public function playNext(){
-        $res = $this->client->request('POST', $this->uri, [
-        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.next']
-        ]);
+    // public function playNext(){
+    //     $res = $this->client->request('POST', $this->uri, [
+    //     'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.next']
+    //     ]);
         
-        if($res->getStatusCode() == 200)
-        return new Response(['Msg' => 'success'],200);
+    //     if($res->getStatusCode() == 200)
+    //     return new Response(['Msg' => 'success'],200);
         
-        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
-    }
+    //     return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    // }
     public function playPrevious(){
         $res = $this->client->request('POST', $this->uri, [
         'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.previous']
@@ -186,9 +187,6 @@ class AudioController extends Controller
 
                 $tracks[] = $track;
         }
-
-        
-        
         
         return $tracks;
     }
@@ -270,6 +268,16 @@ class AudioController extends Controller
                     break;
                 }
             }
+        }
+
+        $currentTrack = $this->getCurrentId();
+        
+        if ($currentTrack){
+            
+            $res = $this->client->request('POST', $this->uri, [
+                'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.tracklist.index',
+                'params' => ['tlid' => $currentTrack]]
+                ]);
         }
 
         $allStates['volume'] = $this->getVolume();
