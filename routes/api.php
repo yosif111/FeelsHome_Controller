@@ -28,6 +28,7 @@ Route::get('/audio/InsertPlaylistToQueue/{playlist_uri}','AudioController@Insert
 Route::get('/audio/changeVolume/{volume}','AudioController@changeVolume');
 Route::get('/audio/playPlayList','AudioController@playPlayList');
 Route::get('/audio/pause','AudioController@pause');
+Route::get('/audio/resume','AudioController@resume');
 Route::get('/audio/play/{id}','AudioController@play');
 Route::get('/audio/getAllStatus','AudioController@getAllStatus');
 Route::get('/audio/getVolume','AudioController@getVolume');

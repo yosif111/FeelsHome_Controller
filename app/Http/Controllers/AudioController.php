@@ -56,11 +56,22 @@ class AudioController extends Controller
         return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
     }
 
+    public function resume(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.resume']
+        ]);
+        
+        if($res->getStatusCode() == 200)
+        return new Response(['Msg' => 'success'],200);
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
     public function play($id){
        
         $res = $this->client->request('POST', $this->uri, [
         'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.play',
-        'params' => ['tlid' => $id]]
+        'params' => ['tlid' => $id * 1]]
         ]);
         
         if($res->getStatusCode() == 200)
