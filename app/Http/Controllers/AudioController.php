@@ -216,7 +216,9 @@ class AudioController extends Controller
         return $tracks;
     }
 
+
     public function getTrackImage($track_uri){
+        $track_uri = substr($track_uri,14);
         try {
             $html = new \Htmldom("https://open.spotify.com/track/$track_uri");
         } catch(\Throwable $e) {
@@ -289,7 +291,7 @@ class AudioController extends Controller
         $allStates['track'] = $content['track'];
         $allStates['artist'] = $content['artist'];
         $allStates['album'] = $content['album'];
-        $allStates['image'] = $this->getTrackImage(substr($content['uri'],14));
+        $allStates['image'] = $this->getTrackImage($content['uri']);
         if ($allStates['track'] == null) {
             $id = $this->getNextTrackId();
             $queue = $this->getQueue();
