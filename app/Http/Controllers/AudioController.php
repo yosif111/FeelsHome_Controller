@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use GuzzleHttp\Client;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
 class AudioController extends Controller
 {
@@ -216,10 +217,9 @@ class AudioController extends Controller
     }
 
     public function getTrackImage($track_uri){
-
         try {
             $html = new \Htmldom("https://open.spotify.com/track/$track_uri");
-           } catch (Exception $e) {
+        } catch(\Throwable $e) {
             return null;
            }
            return $html->find('img')[0]->src;
@@ -285,7 +285,6 @@ class AudioController extends Controller
         
         $allStates['state'] = $this->getCurrentState();
 
-        
         $content = $this->getCurrentTrack();
         $allStates['track'] = $content['track'];
         $allStates['artist'] = $content['artist'];
