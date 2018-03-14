@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Goutte\Client;
-
 class UserController extends Controller
 {
     
@@ -15,12 +14,16 @@ class UserController extends Controller
     }
 
     public function test(){
+        //
+        //Naive Spin - Aaron Lansing
+        // $client = new Client();
+        // $crawler = $client->request('GET', 'https://open.spotify.com/track/1JoAjYaI3zvhXVx41HH7Fc');
 
-        $client = new Client();
-        $crawler = $client->request('GET', 'http://192.168.8.107/settings');
-        return $crawler->filter('input')->each(function ($node) {
-            return $node->parents();
-        });
+        // return $crawler->filter('#cover-img')->each(function ($node) {
+        //     return $node ."\n";
+        // });
+
+
     }
 
    

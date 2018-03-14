@@ -139,6 +139,7 @@ class AudioController extends Controller
             $content = $content['result'];
 
             $track['track'] = $content['name'];
+            $track['uri'] = $content['uri'];
             $track['album'] = $content['album']['name'];
             $track['artist'] = $content['artists'][0]['name'];
 
@@ -187,7 +188,6 @@ class AudioController extends Controller
                 $track['track_name'] = $content['track']['name'];
                 $track['track_length'] = $content['track']['length'];
                 $track['track_uri'] = $content['track']['uri'];
-            
                 if(isset($content['track']['album'])){
                     $track['album_name'] = $content['track']['album']['name'];
                     $track['album_uri'] = $content['track']['album']['uri'];
@@ -200,6 +200,16 @@ class AudioController extends Controller
         }
         
         return $tracks;
+    }
+
+    public function getTrackImage($track_uri){
+
+        try {
+            $html = new \Htmldom("https://open.spotify.com/track/$track_uri");
+           } catch (Exception $e) {
+            return null;
+           }
+           return $html->find('img')[0]->src;
     }
 
     public function getPlaylists(){
@@ -267,7 +277,7 @@ class AudioController extends Controller
         $allStates['track'] = $content['track'];
         $allStates['artist'] = $content['artist'];
         $allStates['album'] = $content['album'];
-
+        $allStates['image'] = $this->getTrackImage(substr($content['uri'],14));
         if ($allStates['track'] == null) {
             $id = $this->getNextTrackId();
             $queue = $this->getQueue();
@@ -295,4 +305,5 @@ class AudioController extends Controller
 
         return $allStates;
     }
+
 }
