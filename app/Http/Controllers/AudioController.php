@@ -128,6 +128,19 @@ class AudioController extends Controller
         return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
     }
 
+    public function getProgress(){
+        $res = $this->client->request('POST', $this->uri, [
+        'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.get_time_position']
+        ]);
+        
+        if($res->getStatusCode() == 200) {
+            $content = json_decode($res->getBody()->getContents(), true);
+            return $content['result'];
+        }
+        
+        return new Response(['Msg' => $res->getReasonPhrase()],$res->getStatusCode());
+    }
+
     public function getCurrentTrack(){
         $res = $this->client->request('POST', $this->uri, [
         'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.playback.get_current_track']
@@ -294,11 +307,18 @@ class AudioController extends Controller
         $currentTrack = $this->getCurrentId();
         
         if ($currentTrack){
-            
+
             $res = $this->client->request('POST', $this->uri, [
                 'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.tracklist.index',
                 'params' => ['tlid' => $currentTrack]]
                 ]);
+            
+            $allStates['index'] = json_decode($res->getBody()->getContents(), true)['result'];
+
+            $progress = $this->getProgress();
+            $progress /= 1000;
+
+            $allStates['progress'] = $progress;
         }
 
         $allStates['volume'] = $this->getVolume();
