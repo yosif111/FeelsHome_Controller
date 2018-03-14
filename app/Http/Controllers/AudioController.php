@@ -314,6 +314,7 @@ class AudioController extends Controller
             $allStates['index'] = json_decode($res->getBody()->getContents(), true)['result'];
             $progress = $this->getProgress();
             $progress /= 1000;
+            $progress = intval($progress);
 
             $allStates['progress'] = $progress;
         }
