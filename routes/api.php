@@ -39,4 +39,6 @@ Route::get('/audio/getCurrentId','AudioController@getCurrentId');
 Route::get('/audio/getCurrentTrack','AudioController@getCurrentTrack');
 Route::get('/audio/getCurrentState','AudioController@getCurrentState');
 Route::get('/audio/playPrevious','AudioController@playPrevious');
+Route::get('/audio/getImage/{track_uri}','AudioController@getTrackImage');
 Route::get('/test','UserController@test');
+
