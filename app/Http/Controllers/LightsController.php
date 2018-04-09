@@ -68,6 +68,9 @@ class LightsController extends Controller
         $hue_username = $this->getHueUserName();
         $ip = $this->getHueIP();
         $bulb_id = $request['id'];
+        unset($request['id']);
+        $request['sat'] = 255;
+
         $client = new \GuzzleHttp\Client();
         $res = $client->request('PUT',"http://$ip/api/$hue_username/lights/$bulb_id/state",[
         'json' => $request->all()
