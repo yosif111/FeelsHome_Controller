@@ -28,13 +28,37 @@ class LightsController extends Controller
         }
         else{
             $username =$contents[0]['success']['username'];
-            User::find(1)->update(['hue_username' => $username]);
+            $this->changeEnvironmentVariable('HUE_USER', $username);
             return $username;
+        }
+    }
+
+    public static function changeEnvironmentVariable($key,$value)
+    {
+        $path = base_path('.env');
+
+        if(is_bool(env($key)))
+        {
+            $old = env($key)? 'true' : 'false';
+        }
+        elseif(env($key)===null){
+            $old = 'null';
+        }
+        else{
+            $old = env($key);
+        }
+
+        if (file_exists($path)) {
+            file_put_contents($path, str_replace(
+                "$key=".$old, "$key=".$value, file_get_contents($path)
+            ));
         }
     }
     
     public function getLightsInfo(){
+        // return phpinfo().'';
         $hue_username = $this->getHueUserName();
+        return $hue_username;
         $ip = $this->getHueIP();
         $client = new \GuzzleHttp\Client();
         $res = $client->get("http://$ip/api/$hue_username/lights");
@@ -56,7 +80,7 @@ class LightsController extends Controller
     }
     public function getHueUserName(){
         $hueIP = $this->getHueIP();
-        $hue_username = User::find(1)->get(['hue_username'])[0]['hue_username'];
+        $hue_username = env('HUE_USER');
         if(!$hue_username || $hue_username == ''){
             $hue_username = $this->createUser();
         }
@@ -109,8 +133,7 @@ class LightsController extends Controller
     }
 
     public function getHueIP(){
-        $ip = Devices::where('device_name', 'Hue')->get(['ip']);
-        return $ip[0]['ip'];
+        return env('BRIDGE_IP');
     }
     
 }
