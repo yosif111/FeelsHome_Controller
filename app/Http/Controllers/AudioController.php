@@ -13,8 +13,8 @@ class AudioController extends Controller
     public $uri;
     
     public function __construct() {
-        $this->uri = env('RASPBERRY_ZERO_IP') .'/mopidy/rpc';
-        $this->client = new \GuzzleHttp\Client();
+        $this->uri = 'http://'. env('RASPBERRY_ZERO_IP') .'/mopidy/rpc';
+        $this->client = new \GuzzleHttp\Client(['connect_timeout' => 10]);
     }
     
     public function clearQueue(){

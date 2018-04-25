@@ -41,6 +41,6 @@ Route::get('/audio/getCurrentState','AudioController@getCurrentState');
 Route::get('/audio/playPrevious','AudioController@playPrevious');
 Route::get('/audio/getImage/{track_uri}','AudioController@getTrackImage');
 
-Route::post('/modes/change','ModesController@applyMode');
+Route::post('/modes/applyMode','ModesController@applyMode');
 Route::get('/test','UserController@test');
 

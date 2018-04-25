@@ -13,9 +13,9 @@ class LightsController extends Controller
     
     
     public function createUser(){
-        
         $ip = $this->getHueIP();
-        $client = new \GuzzleHttp\Client(['base_uri' => "http://$ip/api/"]);
+        
+        $client = new \GuzzleHttp\Client(['base_uri' => "http://$ip/api/", 'connect_timeout' => 10]);
         $res = $client->request('POST','',[
              'json' => [
                           'devicetype' => 'Demo'
@@ -28,7 +28,7 @@ class LightsController extends Controller
         }
         else{
             $username =$contents[0]['success']['username'];
-            $this->changeEnvironmentVariable('HUE_USER', $username);
+            User::first()->update('hue_username',$username);
             return $username;
         }
     }
@@ -56,9 +56,7 @@ class LightsController extends Controller
     }
     
     public function getLightsInfo(){
-        // return phpinfo().'';
-        $hue_username = $this->getHueUserName();
-        return $hue_username;
+         $hue_username = $this->getHueUserName();
         $ip = $this->getHueIP();
         $client = new \GuzzleHttp\Client();
         $res = $client->get("http://$ip/api/$hue_username/lights");
@@ -80,7 +78,7 @@ class LightsController extends Controller
     }
     public function getHueUserName(){
         $hueIP = $this->getHueIP();
-        $hue_username = env('HUE_USER');
+        $hue_username = User::first()['hue_username'];
         if(!$hue_username || $hue_username == ''){
             $hue_username = $this->createUser();
         }
