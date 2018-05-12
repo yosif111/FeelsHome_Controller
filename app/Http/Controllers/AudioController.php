@@ -164,6 +164,8 @@ class AudioController extends Controller
     }
 
     public function InsertPlaylistToQueue($playlist_uri){
+        if(!$playlist_uri || $playlist_uri == 'default' || $playlist_uri == '')
+            return new Response(['Message' => 'playlist uri is inavlid'], 400);
         $this->clearQueue();
         $res = $this->client->request('POST', $this->uri, [
         'json' => ['jsonrpc' => '2.0', 'id' => '1', 'method' => 'core.tracklist.add',

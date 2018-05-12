@@ -115,6 +115,24 @@ class LightsController extends Controller
         return new Response(['msg' => 'done'], 200);
     }
 
+    public function changeStateToApplyMode(Request $request){
+        $hue_username = $this->getHueUserName();
+        $ip = $this->getHueIP();
+        $client = new \GuzzleHttp\Client();
+
+        $id = 1 ;
+        foreach($request['lights'] as $light){
+
+            $body = ['id' => $id, 'bri' => $light['brightness'], 'hue' => $light['color'], 'on' => $light['isOn'] == 1, 'sat' => 255 ];
+             $res = $client->request('PUT',"http://$ip/api/$hue_username/lights/$id/state",[
+                'json' => $body
+                ]);
+                $id++;
+        }
+        return new Response(['msg' => 'done'], 200);
+    }
+
+
     public function getIDsOfLights($hue_username, $ip){
         $client = new \GuzzleHttp\Client();
         $res = $client->get("http://$ip/api/$hue_username/lights");
